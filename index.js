@@ -2,7 +2,7 @@ const express = require('express')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const app = express()
 
-const clientId = "b94ecf6c13b6fc4732cc"
+const client_id = "b94ecf6c13b6fc4732cc"
 const client_secret = "2ab1c1c496095ba4c81891438812da46f6ed528d"
 
 app.use(express.json())
@@ -24,15 +24,24 @@ app.get('/auth/github' , async(req,res) => {
         method : "POST",
         headers : {
             Accept: "application/json",
-            "content-type" : "application/json"
+            "Content-type" : "application/json"
         },
         body : JSON.stringify({
-            clientId,
+            client_id,
             client_secret,
             code
         })
     }). then((res) => res.json())
     console.log(access_token)
+
+    const user_info = await fetch('https://api.github.com/user' , {
+        headers : {
+            Authorization: `Bearer ${access_token}` 
+        }
+    }).then((res) => res.json()) 
+
+    console.log(user_info)
+
     res.send("Post authentication page")
 })
 
